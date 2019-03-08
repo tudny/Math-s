@@ -41,7 +41,7 @@ public class GameController {
 	private OwnArrayList<Button> buttonArray;
 	private OwnArrayList<Boolean> isPawn;
 
-	public void setAll(Stage primary, AnchorPane root, Integer buttonWidth, Integer buttonHeight) {
+	void setAll(Stage primary, AnchorPane root, Integer buttonWidth, Integer buttonHeight) {
 		this.primary = primary;
 
 		primary.getScene().setOnKeyReleased(event -> {
@@ -74,18 +74,7 @@ public class GameController {
 
 						if(isAlreadyClicked){
 							if(button.getStyle().equals(greenButton)){
-								button.setStyle(takenCSS);
-								isPawn.mySet(X, Y, Boolean.TRUE);
-
-								buttonArray.myGet(alreadyX, alreadyY).setStyle(notTakenCss);
-								isPawn.mySet(alreadyX, alreadyY, Boolean.FALSE);
-
-								Integer jX = (alreadyX + X) / 2;
-								Integer jY = (alreadyY + Y) / 2;
-								buttonArray.myGet(jX, jY).setStyle(notTakenCss);
-								isPawn.mySet(jX, jY, Boolean.FALSE);
-
-								resetGreen();
+								playButton(button, X, Y);
 							}
 						} else if(isPawn.myGet(X, Y).equals(Boolean.TRUE)){
 							isAlreadyClicked = true;
@@ -94,6 +83,9 @@ public class GameController {
 							alreadyY = Y;
 
 							int cnt = 0;
+							int rememberX = -1;
+							int rememberY = -1;
+							Button rememberButton = null;
 
 							for (int i = 0; i < 4; i++) {
 								Integer nX = X + dx[1][i];
@@ -105,6 +97,9 @@ public class GameController {
 									if (isPawn.myGet(nX, nY).equals(Boolean.FALSE) && isPawn.myGet(jX, jY).equals(Boolean.TRUE)) {
 										buttonArray.myGet(nX, nY).setStyle(greenButton);
 										cnt++;
+										rememberX = nX;
+										rememberY = nY;
+										rememberButton = buttonArray.myGet(nX, nY);
 									}
 								}
 							}
@@ -113,6 +108,8 @@ public class GameController {
 								isAlreadyClicked = false;
 								alreadyX = null;
 								alreadyY = null;
+							} else if(cnt == 1){
+								playButton(rememberButton, rememberX, rememberY);
 							}
 						}
 
@@ -126,14 +123,14 @@ public class GameController {
 			e.printStackTrace();
 		}
 
-		Line line = new Line(0, MainController.buttonSize * 5, MainController.buttonSize * buttonWidth, MainController.buttonSize * 5);
+		Line line = new Line(0, MainController.buttonSize * MainController.rowsUp, MainController.buttonSize * buttonWidth, MainController.buttonSize * MainController.rowsUp);
 		line.setFill(Color.RED);
 		root.getChildren().add(line);
 
 		for(int y = 0; y < buttonHeight; y++){
 			for(int x = 0; x < buttonWidth; x++){
 				Button button = buttonArray.myGet(x, y);
-				if(y > 4) {
+				if(y > MainController.rowsUp - 1) {
 					button.setStyle(takenCSS);
 					isPawn.mySet(x, y, Boolean.TRUE);
 				} else {
@@ -141,6 +138,21 @@ public class GameController {
 				}
 			}
 		}
+	}
+
+	private void playButton(Button button, Integer X, Integer Y) {
+		button.setStyle(takenCSS);
+		isPawn.mySet(X, Y, Boolean.TRUE);
+
+		buttonArray.myGet(alreadyX, alreadyY).setStyle(notTakenCss);
+		isPawn.mySet(alreadyX, alreadyY, Boolean.FALSE);
+
+		Integer jX = (alreadyX + X) / 2;
+		Integer jY = (alreadyY + Y) / 2;
+		buttonArray.myGet(jX, jY).setStyle(notTakenCss);
+		isPawn.mySet(jX, jY, Boolean.FALSE);
+
+		resetGreen();
 	}
 
 	private void resetGreen() {

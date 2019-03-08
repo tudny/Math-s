@@ -16,6 +16,7 @@ public class MainController {
 
 	private static final Integer minValue = 4;
 	private static final Integer maxValue = 32;
+	static final Integer rowsUp = 5;
 	static final Integer buttonSize = 50;
 	private Stage primary;
 	private Boolean textFieldsReady = false;
@@ -53,7 +54,7 @@ public class MainController {
 		AnchorPane root = loader.load();
 
 		Integer buttonWidth = Integer.parseInt(widthField.getText());
-		Integer buttonHeight = Integer .parseInt(heightField.getText()) + 5;
+		Integer buttonHeight = Integer .parseInt(heightField.getText()) + rowsUp;
 
 		primary.setScene(new Scene(root, buttonWidth * buttonSize, buttonHeight * buttonSize));
 
@@ -69,13 +70,9 @@ public class MainController {
 
 		this.primary = primary;
 
-		widthField.textProperty().addListener((observable, oldValue, newValue) -> {
-			manageTextField(widthField, newValue);
-		});
+		widthField.textProperty().addListener((observable, oldValue, newValue) -> manageTextField(widthField, newValue));
 
-		heightField.textProperty().addListener((observable, oldValue, newValue) -> {
-			manageTextField(heightField, newValue);
-		});
+		heightField.textProperty().addListener((observable, oldValue, newValue) -> manageTextField(heightField, newValue));
 	}
 
 	private void manageTextField(TextField textField, String newValue){
