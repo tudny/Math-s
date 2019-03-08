@@ -15,7 +15,7 @@ public class Main extends Application {
         loader.setLocation(getClass().getResource("fxml/MainWindow.fxml"));
         AnchorPane root = loader.load();
 
-        primaryStage.setTitle("Math's");
+        primaryStage.setTitle("Quick Math's");
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(false);
         primaryStage.sizeToScene();
