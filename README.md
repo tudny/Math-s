@@ -1,8 +1,12 @@
 # Math-s
 
 ## How to play?
-Move your pawns to rich the highest level of the board.
-Select your pawn and select its destination. If you want to cancel hit ESC 
+Move your pawns to reach the highest level of the board.
+Select your pawn and select its destination. If you want to cancel hit ESC
+
+
+## Challenge
+Try to get to 5th level
 
 ## How to run?
 

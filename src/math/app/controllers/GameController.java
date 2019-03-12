@@ -1,14 +1,16 @@
 package math.app.controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import math.app.classes.OwnArrayList;
+import math.app.classes.Pair;
+import java.util.ArrayList;
 
 public class GameController {
 
@@ -40,6 +42,10 @@ public class GameController {
 
 	private OwnArrayList<Button> buttonArray;
 	private OwnArrayList<Boolean> isPawn;
+	private ArrayList<Pair<Button, Button>> history;
+
+	@FXML
+	public Button undoButton;
 
 	void setAll(Stage primary, AnchorPane root, Integer buttonWidth, Integer buttonHeight) {
 		this.primary = primary;
@@ -53,6 +59,8 @@ public class GameController {
 
 		buttonArray = new OwnArrayList<>(buttonWidth, buttonHeight);
 		isPawn = new OwnArrayList<>(buttonWidth, buttonHeight);
+
+		history = new ArrayList<>();
 
 		for(int i = 0; i < buttonWidth * buttonHeight; i++) buttonArray.add(new Button());
 		for(int i = 0; i < buttonWidth * buttonHeight; i++) isPawn.add(Boolean.FALSE);
@@ -138,9 +146,14 @@ public class GameController {
 				}
 			}
 		}
+
+		undoButton.toFront();
 	}
 
 	private void playButton(Button button, Integer X, Integer Y) {
+
+		history.add(new Pair<>(button, buttonArray.myGet(alreadyX, alreadyY)));
+
 		button.setStyle(takenCSS);
 		isPawn.mySet(X, Y, Boolean.TRUE);
 
@@ -172,4 +185,55 @@ public class GameController {
 		alreadyY = null;
 	}
 
+	@FXML
+	public void undo(ActionEvent event){
+
+		try {
+
+			Pair<Button, Button> last;
+
+			try {
+				last = history.get(history.size() - 1);
+			} catch (Exception e){
+				throw new Exception("No more history left", e.getCause());
+			}
+
+			Button button = last.getFirst();
+			Integer X = buttonArray.xIndexOf(button);
+			Integer Y = buttonArray.yIndexOf(button);
+
+			Button old = last.getSecond();
+			Integer oX = buttonArray.xIndexOf(old);
+			Integer oY = buttonArray.yIndexOf(old);
+
+			Integer jX = (X + oX) / 2;
+			Integer jY = (Y + oY) / 2;
+			Button jumpButton = buttonArray.myGet(jX, jY);
+
+			button.setStyle(notTakenCss);
+			isPawn.mySet(X, Y, Boolean.FALSE);
+
+			old.setStyle(takenCSS);
+			isPawn.mySet(oX, oY, Boolean.TRUE);
+
+			jumpButton.setStyle(takenCSS);
+			isPawn.mySet(jX, jY, Boolean.TRUE);
+
+			resetGreen();
+
+			removeLastElementFromArrayList(history);
+		} catch (Exception e){
+			System.out.println("Error undoing: " + e.getMessage());
+		}
+	}
+
+	private void removeLastElementFromArrayList(ArrayList arrayList) throws Exception {
+		try {
+			arrayList.remove(arrayList.size() - 1);
+		} catch (Exception e){
+			Exception error = new Exception("Array is empty");
+			error.setStackTrace(error.getStackTrace());
+			throw error;
+		}
+	}
 }
